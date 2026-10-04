@@ -1,0 +1,15 @@
+# Chunking
+
+What chunking choices, sizes, overlap, and split types does the course state?
+
+- Loaders exist because models need context from files. A Document is page content plus metadata. Formats he lists: PDF, text, HTML, DOCX, CSV (about 00:15:32).
+- PyPDFLoader: fast, basic metadata, simple PDFs. PyMuPDF loader: best speed and metadata, high volume. Unstructured PDF loader: tables and complex layouts, slower, more metadata. Start with PyPDFLoader (about 00:17:06).
+- Indexing stages he lists (about 00:27:46): load, split (he first says 500 to 1,000 characters, preserve sentences, add overlap), embed each chunk, store vectors, then query.
+- Chunking is the biggest quality lever. The same documents, embedding model, database, and query can still return different results if only chunking changes (about 00:29:17). The best embedding model, fastest database, and smartest LLM still return garbage if chunks are wrong (about 00:32:40).
+- Four chunking variables: size, overlap, split boundary, content type. Too small fragments meaning and adds noise. Too large dilutes the vector and wastes tokens. Sweet spot he states: usually about 200 to 1,000 tokens (about 00:32:40). Code must keep functions and classes together (about 00:36:02).
+- Fixed chunking is not for production. Recursive is the reliable default and what he says LangChain uses. Semantic splits on meaning: embed sentences, compare neighbors, cut when similarity drops. Use semantic for legal text, technical manuals, and knowledge bases when accuracy beats speed (about 00:39:27).
+- Traditional chunk-then-embed isolates chunks. Late chunking embeds the full document first so later slices keep cross-chunk context. He cites about 10 to 12 percent accuracy, more complex implementation, and a need for models such as Jina embeddings v2. Verdict in that lecture: semantic is the practical best (about 00:42:50).
+- Decision rule (about 00:46:13): quick or simple structured documents use recursive; critical quality or topic shifts use semantic. Recursive plus overlap is about 80 percent of the value; semantic is the last 20 percent and costs more. General docs: recursive, size 500 to 1,000. Technical and legal: semantic. Code: code splitter, size by function. Markdown: header splitter.
+- Overlap is cheap insurance so a phrase is not split away from its resolution. Example: an API key expiry statement must share a chunk with the refresh instruction (about 01:43:35).
+- On a headed, markdown-like sample, recursive chunking kept one topic per chunk and semantic chunking merged related API topics. Semantic is not automatically better (about 02:42:21). His helper still defaults semantic on, with recursive as fallback, and validates chunk size (about 02:49:03).
+- Early chunking orphans pronouns. Late chunking keeps them by embedding the document before the split. Overlap helps a little (about 3 to 5 percent). Contextual retrieval about 15 to 20 percent. Late chunking about 10 to 12 percent. Combined approaches about 25 to 30 percent. Parent-child is the storage-heavy way to return full context (about 06:24:28). The 0.2 percent figure is only his prepend simulation.
